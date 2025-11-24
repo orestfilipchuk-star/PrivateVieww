@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}Приватный Кинотеатр{% endblock %}</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 <style>
 body {
     margin:0;
@@ -39,11 +40,11 @@ header {
     border-radius:5px;
 }
 .content {
-    flex:1;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:20px;
+   flex:1;
+   display:flex;
+   justify-content:center;
+   align-items:center;
+   padding:20px;
 }
 footer {
     background:#222;
@@ -56,9 +57,11 @@ footer {
 .modal {
     display: none;
     position: fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background: rgba(18,18,18,0.95); /* темный фон, как на главной */
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(18,18,18,0.95);
     justify-content: center;
     align-items: center;
     z-index: 1000;
@@ -71,6 +74,7 @@ footer {
     padding: 20px;
     border-radius:15px;
     max-width:90%;
+    position: relative;
 }
 .close {
     position:absolute;
@@ -117,132 +121,50 @@ footer {
         <form id="bookingForm">
             <input type="hidden" id="selectedSeat" name="seat">
             <input type="hidden" id="selectedMovie" name="movie">
+
             <label for="email">Электронная почта:</label>
             <input type="email" id="email" name="email" placeholder="example@mail.com" required>
+
             <label for="telegram">Ваш тег Telegram:</label>
             <input type="text" id="telegram" name="telegram" placeholder="@username" required>
+
             <button type="submit" id="confirmButton" class="btn">Отправить</button>
         </form>
     </div>
 </div>
 
-<!-- Модальное окно успеха после брони -->
+<!-- Модальное окно успеха -->
 <div id="successModal" class="modal">
     <div class="modal-content">
+        <span class="close" id="closeSuccess">&times;</span>
         <p class="booking-confirmation">
             Ваша бронь принята!<br>
-            Ожидайте сообщение на Telegram, который вы указали в брони.
+            Ожидайте сообщение на Telegram, который вы указали.
         </p>
     </div>
 </div>
 
-<style>
-.modal {
-    display: none;
-    position: fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background: rgba(18,18,18,0.95); /* темный фон */
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-.modal-content {
-    background: transparent;
-    color: white;
-    text-align:center;
-    font-size:28px;
-    padding: 20px;
-    border-radius:15px;
-}
-.booking-confirmation {
-    font-size:28px;
-    line-height:1.5;
-}
-</style>
-
 <script>
-// Показ окна успеха после подтверждения брони
-const successModal = document.getElementById("successModal");
-const bookingForm = document.getElementById("bookingForm"); // форма подтверждения брони
-
-bookingForm.addEventListener("submit", function(e){
-    e.preventDefault();
-
-    const seat = document.getElementById("selectedSeat").value;
-    const movie = document.getElementById("selectedMovie").value;
-    const email = document.getElementById("email").value;
-    const telegram = document.getElementById("telegram").value;
-
-    fetch("{{ url_for('submit_booking') }}", {
-        method: "POST",
-        headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: `seat=${seat}&movie=${movie}&email=${email}&telegram=${telegram}`
-    }).then(response=>{
-        if(response.ok){
-            // Скрываем окно подтверждения
-            const confirmationModal = document.getElementById("confirmationModal");
-            confirmationModal.style.display = "none";
-
-            // Показываем окно успеха
-            successModal.style.display = "flex";
-            bookingForm.reset();
-        } else {
-            alert("Ошибка отправки брони. Попробуйте снова.");
-        }
-    }).catch(err=>{
-        alert("Ошибка сети: " + err);
-    });
-});
-
-// Закрытие модального окна успеха при клике
-successModal.addEventListener("click", function(e){
-    if(e.target==successModal){
-        successModal.style.display = "none";
-    }
-});
-</script>
-
-
-<script>
+// Главные элементы
 const confirmationModal = document.getElementById("confirmationModal");
 const successModal = document.getElementById("successModal");
 const closeConfirmation = document.getElementById("closeConfirmation");
 const closeSuccess = document.getElementById("closeSuccess");
-const confirmBtn = document.getElementById("confirmButton");
 const bookingForm = document.getElementById("bookingForm");
 
-// Открытие модального окна подтверждения
-if(confirmBtn){
-    confirmBtn.addEventListener("click", function(e){
-        e.preventDefault();
-        const seatRadio = document.querySelector('input[name="seat"]:checked');
-        const movieName = document.getElementById("movieName") ? document.getElementById("movieName").value : "";
-
-        if(!seatRadio){
-            alert("Сначала выберите место!");
-            return;
-        }
-
-        const seatId = seatRadio.id;
-        document.getElementById("selectedSeat").value = seatId;
-        document.getElementById("selectedMovie").value = movieName;
-        document.getElementById("modalMovie").innerText = "Фильм: " + movieName;
-        document.getElementById("modalSeat").innerText = "Место: " + seatId;
-
-        confirmationModal.style.display = "flex";
-    });
-}
-
-// Закрытие модальных окон
+// Закрыть окно подтверждения
 closeConfirmation.addEventListener("click", () => confirmationModal.style.display="none");
+
+// Закрыть окно успеха
 closeSuccess.addEventListener("click", () => successModal.style.display="none");
-window.addEventListener("click", function(e){
-    if(e.target==confirmationModal) confirmationModal.style.display="none";
-    if(e.target==successModal) successModal.style.display="none";
+
+// Клик мимо модалки = закрыть
+window.addEventListener("click", (e)=>{
+    if(e.target === confirmationModal) confirmationModal.style.display="none";
+    if(e.target === successModal) successModal.style.display="none";
 });
 
-// Отправка формы через AJAX
+// Отправка брони AJAX
 bookingForm.addEventListener("submit", function(e){
     e.preventDefault();
 
@@ -268,6 +190,6 @@ bookingForm.addEventListener("submit", function(e){
     });
 });
 </script>
+
 </body>
 </html>
-
