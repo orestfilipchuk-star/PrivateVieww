@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Выбор фильма{% endblock %}
+
+{% block content %}
+<h2>Выберите фильм</h2>
+<form action="{{ url_for('choose_seat') }}" method="POST">
+    {% for movie in movies %}
+        <div>
+            <input type="radio" id="movie{{ loop.index }}" name="movie" value="{{ movie }}" required>
+            <label for="movie{{ loop.index }}">{{ movie }}</label>
+        </div>
+    {% endfor %}
+    <button type="submit" class="btn">Выбрать</button>
+</form>
+{% endblock %}

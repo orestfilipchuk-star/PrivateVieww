@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}График работы{% endblock %}
+
+{% block content %}
+<div class="hours-container">
+    <h2 class="hours-title">График работы</h2>
+
+    <div class="hours-table">
+        <div class="day">
+            <span>Понедельник</span>
+            <span class="open">10:00 — 23:00</span>
+        </div>
+        <div class="day">
+            <span>Вторник</span>
+            <span class="open">10:00 — 23:00</span>
+        </div>
+        <div class="day">
+            <span>Среда</span>
+            <span class="open">10:00 — 23:00</span>
+        </div>
+        <div class="day">
+            <span>Четверг</span>
+            <span class="open">10:00 — 23:00</span>
+        </div>
+        <div class="day">
+            <span>Пятница</span>
+            <span class="open">10:00 — 23:00</span>
+        </div>
+        <div class="day">
+            <span>Суббота</span>
+            <span class="open">10:00 — 02:00</span>
+        </div>
+        <div class="day">
+            <span>Воскресенье</span>
+            <span class="close">Выходной</span>
+        </div>
+    </div>
+</div>
+
+<style>
+.hours-container {
+    text-align:center;
+    width:100%;
+}
+
+.hours-title {
+    font-size:28px;
+    margin-bottom:20px;
+}
+
+.hours-table {
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    width:100%;
+    max-width:400px;
+    margin:0 auto;
+}
+
+.day {
+    display:flex;
+    justify-content:space-between;
+    background:#1f1f1f;
+    padding:12px 18px;
+    border-radius:8px;
+    font-size:18px;
+}
+
+.open {
+    color:#4cff4c;
+    font-weight:bold;
+}
+
+.close {
+    color:#ff4c4c;
+    font-weight:bold;
+}
+</style>
+
+{% endblock %}

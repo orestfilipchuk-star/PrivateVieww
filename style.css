@@ -1,0 +1,86 @@
+/* Body */
+body {
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: white;
+    margin: 0;
+    min-height: 100vh;
+}
+
+/* Шапка */
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #222;
+    z-index: 1000;
+    display: flex;
+    justify-content: center; /* центрируем меню по горизонтали */
+    padding: 15px 0;
+}
+
+/* Меню */
+.nav-list {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-list li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.nav-list li a.btn-buy {
+    background-color: #e50914;
+    padding: 10px 20px;
+    border-radius: 6px;
+}
+
+.nav-list li a.btn-buy:hover {
+    background-color: #b00710;
+}
+
+/* Основной контент */
+section {
+    max-width: 900px;
+    margin: 120px auto 40px; /* отступ сверху, чтобы не перекрывалось шапкой */
+    padding: 0 15px;
+    text-align: center;
+}
+footer {
+    text-align: center;      /* выравнивание по центру */
+    padding: 20px 0;         /* отступ сверху и снизу */
+    background-color: #222;  /* фон совпадает с шапкой */
+    color: white;
+    font-size: 16px;
+    margin-top: 40px;        /* отступ от основного контента */
+    width: 100%;
+}
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.page-wrapper {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1; /* занимает всё доступное место между шапкой и футером */
+}
+
+footer {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #222;
+    color: white;
+    font-size: 16px;
+    width: 100%;
+}
