@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Приватный Кинотеатр{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+body {
+    margin:0;
+    font-family: 'Poppins', sans-serif;
+    background-color:#121212;
+    color:white;
+}
+.page-wrapper {
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+}
+header {
+    background:#222;
+    padding:10px 20px;
+}
+.nav-list {
+    list-style:none;
+    display:flex;
+    justify-content: center;
+    gap:20px;
+    padding:0;
+    margin:0;
+}
+.nav-list li a {
+    color:white;
+    text-decoration:none;
+    padding:5px 10px;
+}
+.nav-list li a.btn-buy {
+    background:#ff4c4c;
+    border-radius:5px;
+}
+.content {
+   flex:1;
+   display:flex;
+   justify-content:center;
+   align-items:center;
+   padding:20px;
+}
+footer {
+    background:#222;
+    color:#aaa;
+    text-align:center;
+    padding:15px 0;
+}
+
+/* Модальные окна */
+.modal {
+    display: none;
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(18,18,18,0.95);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-content {
+    background: transparent;
+    color: white;
+    text-align:center;
+    font-size:24px;
+    padding: 20px;
+    border-radius:15px;
+    max-width:90%;
+    position: relative;
+}
+.close {
+    position:absolute;
+    top:20px;
+    right:20px;
+    font-size:30px;
+    cursor:pointer;
+    color:white;
+}
+.booking-confirmation {
+    font-size:28px;
+    line-height:1.5;
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+    <header>
+        <nav>
+            <ul class="nav-list">
+                <li><a href="{{ url_for('home') }}">Главная</a></li>
+                <li><a href="{{ url_for('hours') }}">График работы</a></li>
+                <li><a href="{{ url_for('home') }}" class="btn-buy">Купить билет</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        © 2025 Приватный Кинотеатр. Все права защищены.
+    </footer>
+</div>
+
+<!-- Модальное окно подтверждения -->
+<div id="confirmationModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeConfirmation">&times;</span>
+        <h2>Подтвердите бронь</h2>
+        <p id="modalMovie"></p>
+        <p id="modalSeat"></p>
+        <form id="bookingForm">
+            <input type="hidden" id="selectedSeat" name="seat">
+            <input type="hidden" id="selectedMovie" name="movie">
+
+            <label for="email">Электронная почта:</label>
+            <input type="email" id="email" name="email" placeholder="example@mail.com" required>
+
+            <label for="telegram">Ваш тег Telegram:</label>
+            <input type="text" id="telegram" name="telegram" placeholder="@username" required>
+
+            <button type="submit" id="confirmButton" class="btn">Отправить</button>
+        </form>
+    </div>
+</div>
+
+<!-- Модальное окно успеха -->
+<div id="successModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeSuccess">&times;</span>
+        <p class="booking-confirmation">
+            Ваша бронь принята!<br>
+            Ожидайте сообщение на Telegram, который вы указали.
+        </p>
+    </div>
+</div>
+
+<script>
+// Главные элементы
+const confirmationModal = document.getElementById("confirmationModal");
+const successModal = document.getElementById("successModal");
+const closeConfirmation = document.getElementById("closeConfirmation");
+const closeSuccess = document.getElementById("closeSuccess");
+const bookingForm = document.getElementById("bookingForm");
+
+// Закрыть окно подтверждения
+closeConfirmation.addEventListener("click", () => confirmationModal.style.display="none");
+
+// Закрыть окно успеха
+closeSuccess.addEventListener("click", () => successModal.style.display="none");
+
+// Клик мимо модалки = закрыть
+window.addEventListener("click", (e)=>{
+    if(e.target === confirmationModal) confirmationModal.style.display="none";
+    if(e.target === successModal) successModal.style.display="none";
+});
+
+// Отправка брони AJAX
+bookingForm.addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const seat = document.getElementById("selectedSeat").value;
+    const movie = document.getElementById("selectedMovie").value;
+    const email = document.getElementById("email").value;
+    const telegram = document.getElementById("telegram").value;
+
+    fetch("{{ url_for('submit_booking') }}", {
+        method: "POST",
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: `seat=${seat}&movie=${movie}&email=${email}&telegram=${telegram}`
+    }).then(response=>{
+        if(response.ok){
+            confirmationModal.style.display = "none";
+            successModal.style.display = "flex";
+            bookingForm.reset();
+        } else {
+            alert("Ошибка отправки брони. Попробуйте снова.");
+        }
+    }).catch(err=>{
+        alert("Ошибка сети: " + err);
+    });
+});
+</script>
+
+</body>
+</html>
